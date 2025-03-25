@@ -1,6 +1,13 @@
-// Fixed Modules Script
-// This script resolves module loading issues by providing wrapper functions
-// and ensuring proper global variable assignments.
+/**
+ * Fixed Modules - Helper script for ensuring core modules are available
+ * This script provides fallbacks when modules fail to load
+ */
+
+// Set flag to prevent automatic fixed-index creation
+window.disableFixedIndexCreation = true;
+console.log('Fixed index creation disabled by flag');
+
+// Utility function to load scripts dynamically
 
 console.log('Loading fixed modules...');
 
@@ -325,99 +332,11 @@ window.ui = uiWrapper();
 window.orgChart = orgChartWrapper();
 window.raciMatrix = raciMatrixWrapper();
 
-// Create a fixed copy of index.html with script module fixes
-function createFixedIndexHtml() {
-  fetch('index.html')
-    .then(response => response.text())
-    .then(html => {
-      // Add module wrapper fixes
-      const fixedHtml = html
-        .replace('</head>', `
-          <script>
-            // Module fixers for Quality Re-Org Platform
-            window.moduleFixers = {
-              applyFixes: function() {
-                console.log('Applying module fixes...');
-                
-                // Create fallbacks and wrappers for critical modules
-                const modules = ['config', 'ui', 'dataService', 'orgChart', 'raciMatrix', 'skillTree'];
-                
-                modules.forEach(moduleName => {
-                  if (!window[moduleName]) {
-                    console.log(\`Creating fallback for \${moduleName}\`);
-                    window[moduleName] = { 
-                      init: function() { 
-                        console.log(\`\${moduleName} fallback initialized\`);
-                        return Promise.resolve(); 
-                      }
-                    };
-                  }
-                });
-                
-                console.log('All module fixes applied');
-              }
-            };
-            
-            // Automatically apply fixes when DOMContentLoaded
-            document.addEventListener('DOMContentLoaded', function() {
-              window.moduleFixers.applyFixes();
-            });
-          </script>
-        </head>`)
-        .replace('</body>', `
-          <script>
-            // Ensure the platform continues to load even if there are module issues
-            window.addEventListener('error', function(event) {
-              console.error('Error caught by fixed modules script:', event.message);
-              if (event.message.includes('is not defined') || event.message.includes('is not a function')) {
-                console.log('Applying emergency module fixes...');
-                if (window.moduleFixers && typeof window.moduleFixers.applyFixes === 'function') {
-                  window.moduleFixers.applyFixes();
-                }
-              }
-            });
-          </script>
-        </body>`);
-      
-      // Create a blob with the fixed HTML
-      const blob = new Blob([fixedHtml], { type: 'text/html' });
-      const blobUrl = URL.createObjectURL(blob);
-      
-      // Create a download link
-      const a = document.createElement('a');
-      a.href = blobUrl;
-      a.download = 'fixed-index.html';
-      a.textContent = 'Download Fixed Index';
-      a.style.display = 'none';
-      
-      // Only append to document.body if it exists
-      if (document.body) {
-        document.body.appendChild(a);
-        a.click();
-        
-        // Clean up
-        setTimeout(() => {
-          URL.revokeObjectURL(blobUrl);
-          document.body.removeChild(a);
-        }, 100);
-      } else {
-        // If document.body is not available yet, wait for DOMContentLoaded
-        document.addEventListener('DOMContentLoaded', function() {
-          document.body.appendChild(a);
-          a.click();
-          
-          // Clean up
-          setTimeout(() => {
-            URL.revokeObjectURL(blobUrl);
-            document.body.removeChild(a);
-          }, 100);
-        });
-      }
-    })
-    .catch(error => {
-      console.error('Error creating fixed HTML:', error);
-    });
-}
+// Create the fixed files
+// createFixedIndexHtml(); // Disabled - No longer automatically create fixed HTML file
+console.log('Fixed HTML creation disabled');
+// Conditionally create restart script, it's now automatic only when errors occur
+// Exposing a function to manually create it if needed
 
 // Create a restart script
 function createRestartScript() {
@@ -504,7 +423,8 @@ window.addEventListener('error', function(event) {
 });
 
 // Create the fixed files
-createFixedIndexHtml();
+// createFixedIndexHtml(); // Disabled - No longer automatically create fixed HTML file
+console.log('Fixed HTML creation disabled');
 // Conditionally create restart script, it's now automatic only when errors occur
 // Exposing a function to manually create it if needed
 
@@ -727,4 +647,114 @@ window.moduleFixes = {
     
     return moduleStatus;
   }
-}; 
+};
+
+// Create a fixed copy of index.html with script module fixes - disabled by default
+function createFixedIndexHtml() {
+  console.log('Fixed HTML creation is disabled to prevent automatic downloads');
+  
+  // Set a flag to prevent automatic fixed HTML creation
+  if (window.disableFixedIndexCreation === true) {
+    console.log('Fixed HTML creation is disabled via configuration flag');
+    return;
+  }
+  
+  // Ask for confirmation before creating fixed HTML
+  if (!confirm('Do you want to create and download a fixed-index.html file? Click Cancel to abort.')) {
+    console.log('Fixed HTML creation cancelled by user');
+    return;
+  }
+  
+  console.log('Creating fixed HTML file...');
+  
+  fetch('index.html')
+    .then(response => response.text())
+    .then(html => {
+      // Add module wrapper fixes
+      const fixedHtml = html
+        .replace('</head>', `
+          <script>
+            // Module fixers for Quality Re-Org Platform
+            window.moduleFixers = {
+              applyFixes: function() {
+                console.log('Applying module fixes...');
+                
+                // Create fallbacks and wrappers for critical modules
+                const modules = ['config', 'ui', 'dataService', 'orgChart', 'raciMatrix', 'skillTree'];
+                
+                modules.forEach(moduleName => {
+                  if (!window[moduleName]) {
+                    console.log(\`Creating fallback for \${moduleName}\`);
+                    window[moduleName] = { 
+                      init: function() { 
+                        console.log(\`\${moduleName} fallback initialized\`);
+                        return Promise.resolve(); 
+                      }
+                    };
+                  }
+                });
+                
+                console.log('All module fixes applied');
+              }
+            };
+            
+            // Automatically apply fixes when DOMContentLoaded
+            document.addEventListener('DOMContentLoaded', function() {
+              window.moduleFixers.applyFixes();
+            });
+          </script>
+        </head>`)
+        .replace('</body>', `
+          <script>
+            // Ensure the platform continues to load even if there are module issues
+            window.addEventListener('error', function(event) {
+              console.error('Error caught by fixed modules script:', event.message);
+              if (event.message.includes('is not defined') || event.message.includes('is not a function')) {
+                console.log('Applying emergency module fixes...');
+                if (window.moduleFixers && typeof window.moduleFixers.applyFixes === 'function') {
+                  window.moduleFixers.applyFixes();
+                }
+              }
+            });
+          </script>
+        </body>`);
+      
+      // Create a blob with the fixed HTML
+      const blob = new Blob([fixedHtml], { type: 'text/html' });
+      const blobUrl = URL.createObjectURL(blob);
+      
+      // Create a download link
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = 'fixed-index.html';
+      a.textContent = 'Download Fixed Index';
+      a.style.display = 'none';
+      
+      // Only append to document.body if it exists
+      if (document.body) {
+        document.body.appendChild(a);
+        a.click();
+        
+        // Clean up
+        setTimeout(() => {
+          URL.revokeObjectURL(blobUrl);
+          document.body.removeChild(a);
+        }, 100);
+      } else {
+        // If document.body is not available yet, wait for DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', function() {
+          document.body.appendChild(a);
+          a.click();
+          
+          // Clean up
+          setTimeout(() => {
+            URL.revokeObjectURL(blobUrl);
+            document.body.removeChild(a);
+          }, 100);
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error creating fixed HTML:', error);
+    });
+} 

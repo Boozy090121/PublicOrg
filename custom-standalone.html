@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Quality Org Hub - Focus Factory: BBV, ADD & ARB. A comprehensive quality management system." />
+  
+  <title>Quality Re-Org & Capability Management Tool (Standalone)</title>
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Base styles -->
+  <style>
+    /* Root CSS variables for theming */
+    :root {
+      --primary-color: #00518A; /* Default to BBV color */
+      --primary-color-rgb: 0, 81, 138; /* RGB values for primary color */
+      --text-color: #212529;
+      --bg-color: #ffffff;
+      --bg-light: #f8f9fa;
+      --border-color: #dee2e6;
+      --bbv-color: #00518A;
+      --add-color: #CC2030;
+      --arb-color: #4F46E5;
+      --shared-color: #232323;
+    }
+
+    /* General styles */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text-color);
+      background-color: var(--bg-light);
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Essential styles that don't depend on external files */
+    .initial-loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.9);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .loader-spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid var(--primary-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Global layout */
+    .app-container {
+      display: flex;
+      height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .sidebar {
+      width: 250px;
+      background-color: var(--bg-light);
+      border-right: 1px solid var(--border-color);
+      height: 100%;
+      overflow-y: auto;
+    }
+    
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    
+    /* Sidebar navigation styles */
+    .sidebar-header {
+      padding: 15px;
+      border-bottom: 1px solid var(--border-color);
+      background-color: var(--bg-light);
+    }
+    
+    .sidebar-header h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin: 0;
+    }
+    
+    .value-stream-selector {
+      padding: 15px;
+      border-bottom: 1px solid var(--border-color);
+      background-color: var(--bg-light);
+    }
+    
+    /* Focus factory buttons */
+    .factory-buttons {
+      display: flex;
+      gap: 5px;
+      margin-top: 5px;
+    }
+    
+    .factory-btn {
+      flex: 1;
+      padding: 8px 5px;
+      text-align: center;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-light);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 500;
+    }
+    
+    .factory-btn:hover {
+      background-color: #e9ecef;
+    }
+    
+    .factory-btn.active {
+      background-color: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+    
+    .sidebar-nav {
+      padding: 15px 0;
+    }
+    
+    .nav-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .nav-item {
+      margin-bottom: 5px;
+    }
+    
+    .nav-button {
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      text-decoration: none;
+      color: var(--text-color);
+      border-left: 3px solid transparent;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    
+    .nav-button:hover {
+      background-color: rgba(var(--primary-color-rgb), 0.1);
+    }
+    
+    .nav-button.active {
+      background-color: rgba(var(--primary-color-rgb), 0.1);
+      border-left-color: var(--primary-color);
+      font-weight: 500;
+    }
+    
+    .nav-button i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+    
+    /* Content area */
+    .tab-content {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin-top: 20px;
+    }
+    
+    .context-header {
+      margin-bottom: 20px;
+    }
+    
+    .context-header h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0;
+      color: var(--primary-color);
+    }
+  </style>
+</head>
+<body>
+  <!-- Initial loader -->
+  <div class="initial-loader">
+    <div class="loader-spinner"></div>
+    <p>Loading application...</p>
+  </div>
+  
+  <!-- Application container -->
+  <div class="app-container">
+    <nav class="sidebar">
+      <div class="sidebar-header">
+        <h1>Quality Org Hub</h1>
+      </div>
+      
+      <div class="value-stream-selector">
+        <label for="value-stream">Value Stream:</label>
+        <div class="factory-buttons">
+          <div id="factory-bbv" class="factory-btn active" data-value="bbv">BBV</div>
+          <div id="factory-add" class="factory-btn" data-value="add">ADD</div>
+          <div id="factory-arb" class="factory-btn" data-value="arb">ARB</div>
+        </div>
+      </div>
+      
+      <div class="sidebar-nav">
+        <ul class="nav-list" id="main-nav">
+          <li class="nav-item">
+            <a class="nav-button active" data-tab="dashboard">
+              <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-button" data-tab="personnel">
+              <i class="fas fa-users"></i> Personnel
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-button" data-tab="teams">
+              <i class="fas fa-user-friends"></i> Team Builder
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-button" data-tab="racimatrix">
+              <i class="fas fa-table"></i> RACI Matrix
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-button" data-tab="skillsmatrix">
+              <i class="fas fa-chart-bar"></i> Skills Matrix
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-button" data-tab="skilltree">
+              <i class="fas fa-project-diagram"></i> Skill Tree
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    
+    <main class="main-content">
+      <header class="context-header">
+        <h2 id="context-title">Dashboard</h2>
+      </header>
+      
+      <div id="tabContent" class="tab-content">
+        <div id="dashboard-content">
+          <h3>Welcome to the Quality Re-Org & Capability Management Tool</h3>
+          <p>This is a standalone version that works without Node.js server.</p>
+          <div class="alert alert-info">
+            <strong>Note:</strong> This is running in standalone mode with simulated data.
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <script>
+    // Application state
+    const appData = {
+      state: {
+        valueStream: 'bbv',
+        currentTab: 'dashboard'
+      }
+    };
+    
+    // Mock data for standalone mode
+    const mockData = {
+      teams: [
+        { id: 1, name: 'BBV Quality Team', stream: 'bbv' },
+        { id: 2, name: 'ADD Quality Team', stream: 'add' },
+        { id: 3, name: 'ARB Quality Team', stream: 'arb' }
+      ],
+      personnel: [
+        { id: 1, name: 'John Smith', role: 'Quality Account Manager', stream: 'bbv' },
+        { id: 2, name: 'Jane Doe', role: 'Quality Engineer', stream: 'bbv' },
+        { id: 3, name: 'Michael Brown', role: 'Quality Coordinator', stream: 'bbv' },
+        { id: 4, name: 'Sarah Johnson', role: 'Quality Account Manager', stream: 'add' },
+        { id: 5, name: 'Robert Williams', role: 'Document Control Specialist', stream: 'add' },
+        { id: 6, name: 'Emily Davis', role: 'Quality Lead', stream: 'arb' },
+        { id: 7, name: 'James Wilson', role: 'Quality Specialist', stream: 'arb' },
+        { id: 8, name: 'Lisa Thompson', role: 'Quality Engineer', stream: 'shared' }
+      ]
+    };
+    
+    // UI Controller
+    const ui = {
+      init() {
+        console.log('UI initializing...');
+        try {
+          // Set up factory buttons
+          this.setupValueStreamSwitcher();
+          
+          // Set up tabs
+          this.setupTabs();
+          
+          // Hide loader
+          this.hideLoader();
+          
+          console.log('UI initialized successfully');
+        } catch (error) {
+          console.error('UI initialization failed:', error);
+          alert('Failed to initialize UI: ' + error.message);
+        }
+      },
+      
+      setupValueStreamSwitcher() {
+        const factoryButtons = document.querySelectorAll('.factory-btn');
+        
+        factoryButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const selectedStream = btn.getAttribute('data-value');
+            console.log(`Value stream changed to: ${selectedStream}`);
+            
+            // Update active state
+            factoryButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Update app state
+            appData.state.valueStream = selectedStream;
+            
+            // Update UI styles
+            this.updateValueStreamStyles(selectedStream);
+            
+            // Refresh content
+            this.switchTab(appData.state.currentTab);
+          });
+        });
+        
+        // Set initial styles
+        this.updateValueStreamStyles(appData.state.valueStream);
+      },
+      
+      updateValueStreamStyles(valueStream) {
+        console.log(`Applying styles for: ${valueStream}`);
+        
+        // Set data attribute on document element
+        document.documentElement.setAttribute('data-value-stream', valueStream);
+        
+        // Update colors based on stream
+        const colorMap = {
+          bbv: '#00518A',
+          add: '#CC2030',
+          arb: '#4F46E5'
+        };
+        
+        const color = colorMap[valueStream] || colorMap.bbv;
+        document.documentElement.style.setProperty('--primary-color', color);
+        
+        // Update sidebar accent
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar) {
+          sidebar.style.borderLeftColor = color;
+          sidebar.style.borderLeftWidth = '4px';
+          sidebar.style.borderLeftStyle = 'solid';
+        }
+      },
+      
+      setupTabs() {
+        const navButtons = document.querySelectorAll('.nav-button');
+        
+        navButtons.forEach(button => {
+          button.addEventListener('click', () => {
+            const tabId = button.getAttribute('data-tab');
+            this.switchTab(tabId);
+          });
+        });
+      },
+      
+      switchTab(tabId) {
+        console.log(`Switching to tab: ${tabId}`);
+        
+        // Update active tab in navigation
+        document.querySelectorAll('.nav-button').forEach(el => {
+          el.classList.remove('active');
+        });
+        
+        const activeButton = document.querySelector(`.nav-button[data-tab="${tabId}"]`);
+        if (activeButton) activeButton.classList.add('active');
+        
+        // Update context title
+        const contextTitle = document.getElementById('context-title');
+        if (contextTitle) {
+          contextTitle.textContent = this.getTabLabel(tabId);
+        }
+        
+        // Update app state
+        appData.state.currentTab = tabId;
+        
+        // Update tab content
+        this.renderTabContent(tabId);
+      },
+      
+      getTabLabel(tabId) {
+        const tabLabels = {
+          dashboard: 'Dashboard',
+          personnel: 'Personnel',
+          teams: 'Team Builder',
+          racimatrix: 'RACI Matrix',
+          skillsmatrix: 'Skills Matrix',
+          skilltree: 'Skill Tree'
+        };
+        
+        return tabLabels[tabId] || tabId;
+      },
+      
+      renderTabContent(tabId) {
+        const tabContent = document.getElementById('tabContent');
+        if (!tabContent) return;
+        
+        // Filter data by current value stream
+        const currentStream = appData.state.valueStream;
+        
+        switch(tabId) {
+          case 'dashboard':
+            tabContent.innerHTML = `
+              <h3>Welcome to the Quality Re-Org & Capability Management Tool</h3>
+              <p>This is a standalone version that works without Node.js server.</p>
+              <div class="alert alert-info" style="background-color: #d1ecf1; padding: 10px; border-radius: 4px; border: 1px solid #bee5eb; color: #0c5460;">
+                <strong>Note:</strong> This is running in standalone mode with simulated data.
+              </div>
+              <div style="margin-top: 20px;">
+                <h4>Quick Stats</h4>
+                <div style="display: flex; gap: 20px; margin-top: 15px;">
+                  <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex: 1;">
+                    <h5 style="margin-top: 0;">Team Members</h5>
+                    <p style="font-size: 24px; font-weight: bold;">${mockData.personnel.filter(p => p.stream === currentStream).length}</p>
+                  </div>
+                  <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex: 1;">
+                    <h5 style="margin-top: 0;">Teams</h5>
+                    <p style="font-size: 24px; font-weight: bold;">${mockData.teams.filter(t => t.stream === currentStream).length}</p>
+                  </div>
+                </div>
+              </div>
+            `;
+            break;
+            
+          case 'personnel':
+            const filteredPersonnel = mockData.personnel.filter(p => p.stream === currentStream || p.stream === 'shared');
+            let personnelHtml = `
+              <h3>${currentStream.toUpperCase()} Personnel</h3>
+              <div style="margin-top: 20px;">
+                <table style="width: 100%; border-collapse: collapse;">
+                  <thead>
+                    <tr style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                      <th style="padding: 10px; text-align: left;">Name</th>
+                      <th style="padding: 10px; text-align: left;">Role</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+            `;
+            
+            filteredPersonnel.forEach(person => {
+              personnelHtml += `
+                <tr style="border-bottom: 1px solid #dee2e6;">
+                  <td style="padding: 10px;">${person.name}</td>
+                  <td style="padding: 10px;">${person.role}</td>
+                </tr>
+              `;
+            });
+            
+            personnelHtml += `
+                  </tbody>
+                </table>
+              </div>
+            `;
+            
+            tabContent.innerHTML = personnelHtml;
+            break;
+            
+          default:
+            tabContent.innerHTML = `
+              <h3>${this.getTabLabel(tabId)}</h3>
+              <p>This tab is under construction in the standalone version.</p>
+            `;
+        }
+      },
+      
+      hideLoader() {
+        const loader = document.querySelector('.initial-loader');
+        if (loader) {
+          loader.style.display = 'none';
+        }
+      }
+    };
+    
+    // Initialize the application when document is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('Document loaded, initializing UI...');
+      ui.init();
+    });
+  </script>
+</body>
+</html> 

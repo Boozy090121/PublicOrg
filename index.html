@@ -906,6 +906,20 @@
       }, 1000);
     });
   </script>
+  
+  <!-- Cleanup script - helps with existing fixed-index.html issues -->
+  <script>
+    // Detect if we might be running from a fixed index file
+    if (window.location.href.includes('fixed-index.html')) {
+      console.log('Running from fixed-index.html - consider using regular index.html instead');
+      
+      // Add a warning banner
+      const warningBanner = document.createElement('div');
+      warningBanner.style.cssText = 'position:fixed; bottom:0; left:0; right:0; background:#f8d7da; color:#721c24; padding:10px; text-align:center; z-index:9999;';
+      warningBanner.innerHTML = 'Running from fixed-index.html. <a href="index.html" style="color:#721c24; text-decoration:underline;">Switch to regular index.html</a>';
+      document.body.appendChild(warningBanner);
+    }
+  </script>
 </body>
 </html>
 
