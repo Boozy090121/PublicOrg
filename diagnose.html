@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quality Re-Org Platform - Module Diagnostics</title>
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa;
+      color: #212529;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      color: #00518A;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .module-section {
+      margin-bottom: 30px;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .module-header {
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-bottom: 1px solid #dee2e6;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .module-header h2 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+    
+    .module-content {
+      padding: 15px;
+    }
+    
+    .status-badge {
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    
+    .status-loading {
+      background-color: #cce5ff;
+      color: #004085;
+    }
+    
+    .status-success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    
+    .status-warning {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+    
+    .status-error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    
+    .module-detail {
+      margin-top: 10px;
+    }
+    
+    .module-detail-row {
+      display: flex;
+      margin-bottom: 5px;
+    }
+    
+    .module-detail-label {
+      width: 150px;
+      font-weight: bold;
+    }
+    
+    .fixes-section {
+      margin-top: 20px;
+    }
+    
+    .fix-action {
+      margin-bottom: 15px;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+      border-left: 4px solid #6c757d;
+    }
+    
+    .fix-action h3 {
+      margin-top: 0;
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+    
+    .button-container {
+      text-align: center;
+      margin-top: 30px;
+    }
+    
+    .button {
+      background-color: #00518A;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .button:hover {
+      background-color: #003c67;
+    }
+    
+    .button-secondary {
+      background-color: #6c757d;
+    }
+    
+    .button-secondary:hover {
+      background-color: #5a6268;
+    }
+    
+    .button-success {
+      background-color: #28a745;
+    }
+    
+    .button-success:hover {
+      background-color: #218838;
+    }
+    
+    .log-container {
+      margin-top: 30px;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      padding: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+      background-color: #f8f9fa;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    
+    .log-entry {
+      margin: 5px 0;
+      padding: 3px 0;
+      border-bottom: 1px solid #f2f2f2;
+    }
+    
+    .log-entry.error {
+      color: #dc3545;
+    }
+    
+    .log-entry.success {
+      color: #28a745;
+    }
+    
+    .log-entry.warning {
+      color: #ffc107;
+    }
+  </style>
+  
+  <!-- Load the fixed modules script -->
+  <script src="fixed-modules.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Module Diagnostics</h1>
+    
+    <div id="modules-container">
+      <!-- Module sections will be generated here -->
+      <div class="module-section" id="config-module">
+        <div class="module-header">
+          <h2>Configuration Module</h2>
+          <span class="status-badge status-loading">Checking...</span>
+        </div>
+        <div class="module-content">
+          <p>Checking configuration module status...</p>
+        </div>
+      </div>
+      
+      <div class="module-section" id="ui-module">
+        <div class="module-header">
+          <h2>UI Module</h2>
+          <span class="status-badge status-loading">Checking...</span>
+        </div>
+        <div class="module-content">
+          <p>Checking UI module status...</p>
+        </div>
+      </div>
+      
+      <div class="module-section" id="orgchart-module">
+        <div class="module-header">
+          <h2>Organization Chart Module</h2>
+          <span class="status-badge status-loading">Checking...</span>
+        </div>
+        <div class="module-content">
+          <p>Checking organization chart module status...</p>
+        </div>
+      </div>
+      
+      <div class="module-section" id="raci-module">
+        <div class="module-header">
+          <h2>RACI Matrix Module</h2>
+          <span class="status-badge status-loading">Checking...</span>
+        </div>
+        <div class="module-content">
+          <p>Checking RACI matrix module status...</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="fixes-section">
+      <h2>Automatic Fixes</h2>
+      
+      <div class="fix-action">
+        <h3>Fix Module References</h3>
+        <p>Repair inconsistent module naming and ensure correct variable names are used throughout the application.</p>
+        <button id="fix-references" class="button">Apply Fix</button>
+      </div>
+      
+      <div class="fix-action">
+        <h3>Fix Case Sensitivity Issues</h3>
+        <p>Address case sensitivity issues in file paths and module imports.</p>
+        <button id="fix-case" class="button">Apply Fix</button>
+      </div>
+      
+      <div class="fix-action">
+        <h3>Generate Fixed Application</h3>
+        <p>Create a fixed version of the application with all implemented repairs.</p>
+        <button id="generate-fixed" class="button button-success">Generate</button>
+      </div>
+    </div>
+    
+    <div class="log-container" id="log-container">
+      <div class="log-entry">Starting module diagnostics...</div>
+    </div>
+    
+    <div class="button-container">
+      <button id="run-diagnostics" class="button">Re-Run Diagnostics</button>
+      <button id="goto-app" class="button button-secondary">Go to Application</button>
+    </div>
+  </div>
+  
+  <script src="diagnose.js"></script>
+</body>
+</html> 

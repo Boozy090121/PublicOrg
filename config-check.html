@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Config Module Check</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      margin-top: 0;
+      color: #333;
+    }
+    #check-result {
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 4px;
+    }
+    .success {
+      background-color: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+    .error {
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+    pre {
+      background-color: #f8f9fa;
+      padding: 10px;
+      border-radius: 4px;
+      overflow: auto;
+      max-height: 300px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0069d9;
+    }
+  </style>
+  
+  <!-- First load core/config.js -->
+  <script src="js/core/config.js"></script>
+  
+  <!-- Then load the modules that might depend on it -->
+  <script src="fixed-modules.js"></script>
+  <script src="fix-path.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Config Module Check</h1>
+    
+    <button id="check-config">Check Config Module</button>
+    
+    <div id="check-result"></div>
+    
+    <h2>Config Object Properties:</h2>
+    <pre id="config-properties"></pre>
+    
+    <h2>Test Config Functions:</h2>
+    <div>
+      <button id="test-init">Test config.init()</button>
+      <button id="test-get-config">Test config.getConfig()</button>
+    </div>
+    <pre id="function-result"></pre>
+  </div>
+  
+  <script>
+    // Function to check if config is loaded
+    function checkConfig() {
+      const resultDiv = document.getElementById('check-result');
+      const propertiesDiv = document.getElementById('config-properties');
+      
+      // Check if config object exists
+      if (typeof window.config === 'undefined') {
+        resultDiv.className = 'error';
+        resultDiv.innerHTML = '<strong>Error:</strong> Config module not found in global scope!';
+        propertiesDiv.textContent = 'No config object available';
+        return false;
+      }
+      
+      // Check if config has required methods
+      if (typeof window.config.getConfig !== 'function') {
+        resultDiv.className = 'error';
+        resultDiv.innerHTML = '<strong>Warning:</strong> Config module is missing getConfig method!';
+        propertiesDiv.textContent = JSON.stringify(window.config, null, 2);
+        return false;
+      }
+      
+      // Success!
+      resultDiv.className = 'success';
+      resultDiv.innerHTML = '<strong>Success:</strong> Config module is loaded and available!';
+      propertiesDiv.textContent = JSON.stringify(window.config, null, 2);
+      return true;
+    }
+    
+    // Function to test config.init()
+    function testInit() {
+      const functionResultDiv = document.getElementById('function-result');
+      
+      try {
+        const result = window.config.init();
+        functionResultDiv.textContent = 'config.init() called successfully!';
+        
+        if (result instanceof Promise) {
+          functionResultDiv.textContent += '\nReturned a Promise. Waiting for resolution...';
+          
+          result.then(() => {
+            functionResultDiv.textContent += '\nPromise resolved successfully.';
+          }).catch(error => {
+            functionResultDiv.textContent += `\nPromise rejected with error: ${error.message}`;
+          });
+        } else {
+          functionResultDiv.textContent += `\nReturned: ${JSON.stringify(result)}`;
+        }
+      } catch (error) {
+        functionResultDiv.textContent = `Error calling config.init(): ${error.message}`;
+      }
+    }
+    
+    // Function to test config.getConfig()
+    function testGetConfig() {
+      const functionResultDiv = document.getElementById('function-result');
+      
+      try {
+        const result = window.config.getConfig('app.name');
+        functionResultDiv.textContent = `config.getConfig('app.name') returned: ${result}`;
+        
+        // Try another path
+        const uiResult = window.config.getConfig('ui.theme');
+        functionResultDiv.textContent += `\nconfig.getConfig('ui.theme') returned: ${uiResult}`;
+        
+        // Try getting all settings
+        const allSettings = window.config.getConfig();
+        functionResultDiv.textContent += `\nconfig.getConfig() returned: ${JSON.stringify(allSettings, null, 2)}`;
+      } catch (error) {
+        functionResultDiv.textContent = `Error calling config.getConfig(): ${error.message}`;
+      }
+    }
+    
+    // Add event listeners
+    document.getElementById('check-config').addEventListener('click', checkConfig);
+    document.getElementById('test-init').addEventListener('click', testInit);
+    document.getElementById('test-get-config').addEventListener('click', testGetConfig);
+    
+    // Run the check on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(checkConfig, 500); // Slight delay to ensure everything is loaded
+    });
+  </script>
+</body>
+</html> 

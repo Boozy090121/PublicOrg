@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quality Re-Org Platform - Basic Mode</title>
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    :root {
+      --primary-color: #00518A;
+      --text-color: #212529;
+      --bg-color: #ffffff;
+      --bg-light: #f8f9fa;
+      --border-color: #dee2e6;
+      --bbv-color: #00518A;
+      --add-color: #CC2030;
+      --arb-color: #4F46E5;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text-color);
+      background-color: var(--bg-light);
+      margin: 0;
+      padding: 0;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .header {
+      background-color: var(--bg-color);
+      border-radius: 5px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .header h1 {
+      color: var(--primary-color);
+      margin: 0;
+      font-size: 1.75rem;
+    }
+    
+    .header p {
+      color: #6c757d;
+      margin: 10px 0 0 0;
+    }
+    
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .tab {
+      padding: 10px 15px;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s ease;
+    }
+    
+    .tab:hover {
+      background-color: rgba(0,0,0,0.03);
+    }
+    
+    .tab.active {
+      color: var(--primary-color);
+      border-bottom-color: var(--primary-color);
+      font-weight: 500;
+    }
+    
+    .tab-content {
+      display: none;
+      background-color: var(--bg-color);
+      border-radius: 5px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .tab-content h2 {
+      margin-top: 0;
+      color: var(--primary-color);
+    }
+    
+    .content-section {
+      margin-bottom: 25px;
+    }
+    
+    .card {
+      background-color: var(--bg-color);
+      border-radius: 5px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .card h3 {
+      margin-top: 0;
+      color: var(--primary-color);
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 8px 16px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    
+    .btn:hover {
+      background-color: #003f6f;
+    }
+    
+    .info-message {
+      background-color: #cff4fc;
+      color: #055160;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    
+    .warning-message {
+      background-color: #fff3cd;
+      color: #856404;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    table th, table td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    table th {
+      background-color: var(--bg-light);
+      font-weight: 600;
+    }
+    
+    .placeholder {
+      background-color: var(--bg-light);
+      border-radius: 5px;
+      padding: 30px;
+      text-align: center;
+      color: #6c757d;
+    }
+    
+    .placeholder i {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      opacity: 0.3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Quality Re-Org Platform</h1>
+      <p>Basic Mode - Core functionality without external dependencies</p>
+    </div>
+    
+    <div class="info-message">
+      <strong>Basic Mode Active:</strong> This is a simplified version of the application that works without requiring Node.js or external services.
+    </div>
+    
+    <div class="tabs">
+      <div class="tab active" data-tab="dashboard">Dashboard</div>
+      <div class="tab" data-tab="personnel">Personnel</div>
+      <div class="tab" data-tab="teams">Teams</div>
+      <div class="tab" data-tab="documentation">Documentation</div>
+    </div>
+    
+    <div id="dashboard" class="tab-content active">
+      <h2>Dashboard</h2>
+      
+      <div class="content-section">
+        <div class="card">
+          <h3>Welcome to Quality Re-Org Platform</h3>
+          <p>This basic mode provides core functionality that works without external dependencies.</p>
+          <p>All data is stored locally in your browser. No data is sent to external servers.</p>
+        </div>
+        
+        <div class="card">
+          <h3>Focus Factories</h3>
+          <p>Quick access to each focus factory:</p>
+          <div>
+            <button class="btn" style="background-color: #00518A;">BBV</button>
+            <button class="btn" style="background-color: #CC2030;">ADD</button>
+            <button class="btn" style="background-color: #4F46E5;">ARB</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="personnel" class="tab-content">
+      <h2>Personnel Management</h2>
+      
+      <div class="content-section">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Title</th>
+              <th>Focus Factory</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>John Smith</td>
+              <td>Quality Manager</td>
+              <td>BBV</td>
+              <td>Active</td>
+            </tr>
+            <tr>
+              <td>Jane Doe</td>
+              <td>Senior QA Specialist</td>
+              <td>ADD</td>
+              <td>Active</td>
+            </tr>
+            <tr>
+              <td>Bob Johnson</td>
+              <td>Quality Auditor</td>
+              <td>ARB</td>
+              <td>Active</td>
+            </tr>
+            <tr>
+              <td>Alice Williams</td>
+              <td>Validation Specialist</td>
+              <td>BBV</td>
+              <td>Active</td>
+            </tr>
+            <tr>
+              <td>Charlie Brown</td>
+              <td>QA Engineer</td>
+              <td>Shared</td>
+              <td>Active</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <div id="teams" class="tab-content">
+      <h2>Teams</h2>
+      
+      <div class="content-section">
+        <div class="card">
+          <h3>BBV Quality Team</h3>
+          <p><strong>Members:</strong> 2</p>
+          <p><strong>Focus Factory:</strong> BBV</p>
+        </div>
+        
+        <div class="card">
+          <h3>ADD Quality Team</h3>
+          <p><strong>Members:</strong> 1</p>
+          <p><strong>Focus Factory:</strong> ADD</p>
+        </div>
+        
+        <div class="card">
+          <h3>ARB Quality Team</h3>
+          <p><strong>Members:</strong> 1</p>
+          <p><strong>Focus Factory:</strong> ARB</p>
+        </div>
+        
+        <div class="card">
+          <h3>Shared Quality Team</h3>
+          <p><strong>Members:</strong> 1</p>
+          <p><strong>Focus Factory:</strong> Shared</p>
+        </div>
+      </div>
+    </div>
+    
+    <div id="documentation" class="tab-content">
+      <h2>Documentation</h2>
+      
+      <div class="content-section">
+        <div class="card">
+          <h3>About This Application</h3>
+          <p>The Quality Re-Org Platform is a comprehensive quality management system designed for BBV, ADD, and ARB focus factories.</p>
+          <p>This basic mode provides essential functionality without requiring external dependencies.</p>
+        </div>
+        
+        <div class="card">
+          <h3>Troubleshooting</h3>
+          <p><strong>If the main application is not loading:</strong></p>
+          <ul>
+            <li>Try clearing your browser cache and reloading the page</li>
+            <li>Make sure you have a stable internet connection</li>
+            <li>Use the diagnose.html tool to identify any issues</li>
+            <li>Consider using this basic mode for essential functionality</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Basic tab functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const tabs = document.querySelectorAll('.tab');
+      const tabContents = document.querySelectorAll('.tab-content');
+      
+      tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+          // Deactivate all tabs
+          tabs.forEach(t => t.classList.remove('active'));
+          tabContents.forEach(c => c.classList.remove('active'));
+          
+          // Activate clicked tab
+          this.classList.add('active');
+          const tabId = this.getAttribute('data-tab');
+          document.getElementById(tabId).classList.add('active');
+        });
+      });
+    });
+  </script>
+</body>
+</html> 

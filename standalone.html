@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quality Re-Org Platform - Launcher</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f8f9fa;
+      color: #212529;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #00518A;
+      margin-top: 0;
+    }
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      margin: 10px 5px;
+      background-color: #00518A;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 16px;
+    }
+    .btn:hover {
+      background-color: #003a61;
+    }
+    .btn-alt {
+      background-color: #6c757d;
+    }
+    .btn-alt:hover {
+      background-color: #5a6268;
+    }
+    .btn-warning {
+      background-color: #ffc107;
+      color: #212529;
+    }
+    .btn-warning:hover {
+      background-color: #e0a800;
+    }
+    .info-box {
+      background-color: #f8f9fa;
+      border-left: 4px solid #00518A;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    .warning-box {
+      background-color: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quality Re-Org Platform</h1>
+    <p>Welcome to the Quality Re-Org & Capability Management Tool. This launcher provides easy access to the application in various modes.</p>
+    
+    <div class="info-box">
+      <h3>System Information</h3>
+      <p>This standalone launcher allows you to run the application without Node.js or server dependencies.</p>
+      <p>All data will be stored in your browser's local storage. No data is sent to any external servers.</p>
+    </div>
+    
+    <h2>Launch Options</h2>
+    
+    <div>
+      <a href="index.html" class="btn" target="_blank">Launch Main Application</a>
+      <a href="basic.html" class="btn btn-alt" target="_blank">Launch Basic Mode</a>
+    </div>
+    
+    <h2>Troubleshooting</h2>
+    
+    <div>
+      <a href="diagnose.html" class="btn btn-warning" target="_blank">Run Diagnostics</a>
+      <a href="fallback.html" class="btn btn-alt" target="_blank">Launch Fallback Mode</a>
+    </div>
+    
+    <div class="warning-box">
+      <h3>Data Storage Notice</h3>
+      <p>This application uses your browser's local storage to save data. Clearing your browser data or using private/incognito mode may result in data loss.</p>
+    </div>
+    
+    <script>
+      // Check if running from file system
+      if (window.location.protocol === 'file:') {
+        const warningBox = document.createElement('div');
+        warningBox.className = 'warning-box';
+        warningBox.innerHTML = `
+          <h3>Running from File System</h3>
+          <p>You are running this application directly from the file system. For optimal performance and to avoid potential issues, it's recommended to serve the files through a web server.</p>
+          <p>Some features may not work correctly when running from the file system due to browser security restrictions.</p>
+        `;
+        document.querySelector('.container').appendChild(warningBox);
+      }
+      
+      // Check browser compatibility
+      const checkBrowserCompatibility = () => {
+        const issues = [];
+        
+        if (!window.localStorage) {
+          issues.push('Local Storage is not supported by your browser. Data saving will not work.');
+        }
+        
+        if (!window.JSON) {
+          issues.push('JSON is not supported by your browser. Data processing will not work.');
+        }
+        
+        if (issues.length > 0) {
+          const compatibilityBox = document.createElement('div');
+          compatibilityBox.className = 'warning-box';
+          compatibilityBox.innerHTML = `
+            <h3>Browser Compatibility Issues</h3>
+            <ul>
+              ${issues.map(issue => `<li>${issue}</li>`).join('')}
+            </ul>
+            <p>Please use a modern browser like Chrome, Firefox, Edge, or Safari for the best experience.</p>
+          `;
+          document.querySelector('.container').appendChild(compatibilityBox);
+        }
+      };
+      
+      checkBrowserCompatibility();
+    </script>
+  </div>
+</body>
+</html> 

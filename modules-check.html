@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modules Check - Quality Re-Org Platform</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      margin-top: 0;
+      color: #00518A;
+    }
+    .module-container {
+      margin-bottom: 20px;
+      padding: 10px;
+      border-radius: 4px;
+      border-left: 4px solid #ccc;
+    }
+    .module-name {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .status {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 12px;
+      margin-left: 10px;
+    }
+    .status-missing {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    .status-incomplete {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+    .status-complete {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .module-missing {
+      border-left-color: #dc3545;
+      background-color: #f8d7da;
+    }
+    .module-complete {
+      border-left-color: #28a745;
+      background-color: #d4edda;
+    }
+    .module-incomplete {
+      border-left-color: #ffc107;
+      background-color: #fff3cd;
+    }
+    .property-list {
+      margin: 5px 0 0 0;
+      padding-left: 20px;
+    }
+    .property {
+      list-style-type: disc;
+      font-size: 14px;
+    }
+    .property-missing {
+      color: #dc3545;
+    }
+    .property-found {
+      color: #28a745;
+    }
+    .buttons {
+      margin-bottom: 20px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    button:hover {
+      background-color: #0069d9;
+    }
+    button.danger {
+      background-color: #dc3545;
+    }
+    button.danger:hover {
+      background-color: #c82333;
+    }
+    pre {
+      background-color: #f8f9fa;
+      padding: 10px;
+      border-radius: 4px;
+      overflow: auto;
+      max-height: 200px;
+      font-size: 12px;
+    }
+  </style>
+  
+  <!-- First load the config and core modules -->
+  <script src="js/core/config.js"></script>
+  <script src="fixed-modules.js"></script>
+  <script src="fix-path.js"></script>
+  
+  <!-- Path fix script -->
+  <script src="path-fix.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Modules Check</h1>
+    <p>This tool checks if all required modules are properly loaded and available in the global scope.</p>
+    
+    <div class="buttons">
+      <button id="check-modules">Check Modules</button>
+      <button id="apply-fixes">Apply Fixes</button>
+      <button id="reload-page">Reload Page</button>
+      <button id="toggle-console" class="danger">Show/Hide Console</button>
+    </div>
+    
+    <div id="results-container">
+      <h2>Results:</h2>
+      <div id="modules-results"></div>
+    </div>
+    
+    <div id="console-container" style="display: none;">
+      <h2>Console Output:</h2>
+      <pre id="console-output"></pre>
+    </div>
+  </div>
+  
+  <!-- Load main JS after page structure is defined -->
+  <script src="js/main.js"></script>
+  
+  <!-- Custom modules check script -->
+  <script src="js/modules-check.js"></script>
+  
+  <!-- UI Script -->
+  <script>
+    // Override console functions to capture output
+    const originalConsole = {
+      log: console.log,
+      warn: console.warn,
+      error: console.error
+    };
+    
+    const consoleOutput = document.getElementById('console-output');
+    
+    // Capture console output
+    function captureConsole() {
+      console.log = function(...args) {
+        originalConsole.log.apply(console, args);
+        consoleOutput.textContent += '> ' + args.join(' ') + '\n';
+      };
+      
+      console.warn = function(...args) {
+        originalConsole.warn.apply(console, args);
+        consoleOutput.textContent += '⚠️ ' + args.join(' ') + '\n';
+      };
+      
+      console.error = function(...args) {
+        originalConsole.error.apply(console, args);
+        consoleOutput.textContent += '🔴 ' + args.join(' ') + '\n';
+      };
+    }
+    
+    // Restore original console functions
+    function restoreConsole() {
+      console.log = originalConsole.log;
+      console.warn = originalConsole.warn;
+      console.error = originalConsole.error;
+    }
+    
+    // Check modules and update UI
+    function checkAndDisplayModules() {
+      captureConsole();
+      
+      const modulesToCheck = [
+        { name: 'config', properties: ['init', 'getConfig', 'colors'] },
+        { name: 'ui', properties: ['init', 'switchTab', 'refreshAllTabs'] },
+        { name: 'orgChart', properties: ['init', 'render'] },
+        { name: 'raciMatrix', properties: ['init', 'render'] },
+        { name: 'appData', properties: ['state'] }
+      ];
+      
+      const results = {};
+      const resultsContainer = document.getElementById('modules-results');
+      resultsContainer.innerHTML = '';
+      
+      modulesToCheck.forEach(module => {
+        const moduleObj = window[module.name];
+        
+        // Create module result container
+        const moduleDiv = document.createElement('div');
+        moduleDiv.className = 'module-container';
+        
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'module-name';
+        
+        if (typeof moduleObj === 'undefined') {
+          // Module is missing
+          results[module.name] = { found: false, properties: {}, status: 'missing' };
+          
+          moduleDiv.classList.add('module-missing');
+          nameDiv.textContent = module.name;
+          
+          const statusSpan = document.createElement('span');
+          statusSpan.className = 'status status-missing';
+          statusSpan.textContent = 'Missing';
+          nameDiv.appendChild(statusSpan);
+          
+          moduleDiv.appendChild(nameDiv);
+          
+          const missingText = document.createElement('div');
+          missingText.textContent = 'This module was not found in the global scope.';
+          moduleDiv.appendChild(missingText);
+        } else {
+          // Module exists, check properties
+          const propertyResults = {};
+          let allPropertiesFound = true;
+          
+          const propertyList = document.createElement('ul');
+          propertyList.className = 'property-list';
+          
+          module.properties.forEach(prop => {
+            const hasProp = typeof moduleObj[prop] !== 'undefined';
+            propertyResults[prop] = hasProp;
+            
+            if (!hasProp) {
+              allPropertiesFound = false;
+            }
+            
+            const propItem = document.createElement('li');
+            propItem.className = `property ${hasProp ? 'property-found' : 'property-missing'}`;
+            propItem.textContent = `${prop}: ${hasProp ? 'Found' : 'Missing'}`;
+            propertyList.appendChild(propItem);
+          });
+          
+          const status = allPropertiesFound ? 'complete' : 'incomplete';
+          results[module.name] = {
+            found: true,
+            properties: propertyResults,
+            status: status
+          };
+          
+          moduleDiv.classList.add(`module-${status}`);
+          nameDiv.textContent = module.name;
+          
+          const statusSpan = document.createElement('span');
+          statusSpan.className = `status status-${status}`;
+          statusSpan.textContent = status === 'complete' ? 'Complete' : 'Incomplete';
+          nameDiv.appendChild(statusSpan);
+          
+          moduleDiv.appendChild(nameDiv);
+          moduleDiv.appendChild(propertyList);
+        }
+        
+        resultsContainer.appendChild(moduleDiv);
+      });
+      
+      console.log('Module check completed:', results);
+      restoreConsole();
+      
+      return results;
+    }
+    
+    // Apply fixes to missing modules
+    function applyFixes() {
+      captureConsole();
+      
+      console.log('Applying fixes to missing modules...');
+      
+      // Try to load fix-modules.js and fixed-modules.js if available
+      if (typeof window.moduleFixes === 'object' && typeof window.moduleFixes.fixMissingModules === 'function') {
+        console.log('Using moduleFixes.fixMissingModules()');
+        window.moduleFixes.fixMissingModules();
+      } else if (typeof window.fixMissingModules === 'function') {
+        console.log('Using window.fixMissingModules()');
+        window.fixMissingModules();
+      } else {
+        console.error('No fix functions found. Manual fixes may be required.');
+      }
+      
+      // Apply path fixes if available
+      if (typeof window.pathFix === 'object' && typeof window.pathFix.applyFixes === 'function') {
+        console.log('Using pathFix.applyFixes()');
+        window.pathFix.applyFixes();
+      }
+      
+      // Re-check modules after applying fixes
+      setTimeout(() => {
+        console.log('Re-checking modules after fixes...');
+        checkAndDisplayModules();
+      }, 500);
+      
+      restoreConsole();
+    }
+    
+    // Set up event listeners
+    document.getElementById('check-modules').addEventListener('click', checkAndDisplayModules);
+    document.getElementById('apply-fixes').addEventListener('click', applyFixes);
+    document.getElementById('reload-page').addEventListener('click', () => window.location.reload());
+    document.getElementById('toggle-console').addEventListener('click', () => {
+      const consoleContainer = document.getElementById('console-container');
+      consoleContainer.style.display = consoleContainer.style.display === 'none' ? 'block' : 'none';
+    });
+    
+    // Run initial check on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      // Capture initial console output
+      captureConsole();
+      
+      // Wait a moment for all scripts to load
+      setTimeout(() => {
+        checkAndDisplayModules();
+      }, 1000);
+    });
+  </script>
+</body>
+</html> 

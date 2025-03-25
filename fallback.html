@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quality Org - Emergency Mode</title>
+  <style>
+    /* Minimal styling with no external dependencies */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+      color: #333;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f8f9fa;
+    }
+    header {
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      color: #00518A;
+      margin: 0;
+    }
+    h2 {
+      color: #333;
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+    }
+    .tabs {
+      display: flex;
+      list-style: none;
+      padding: 0;
+      margin: 20px 0;
+      border-bottom: 1px solid #ddd;
+    }
+    .tabs li {
+      margin-right: 10px;
+    }
+    .tabs button {
+      padding: 8px 16px;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .tabs button.active {
+      border-bottom: 2px solid #00518A;
+      color: #00518A;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .card {
+      background: white;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 16px;
+    }
+    .alert {
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin-bottom: 16px;
+      border-left: 4px solid #f0ad4e;
+      background-color: #fcf8e3;
+      color: #8a6d3b;
+    }
+    .alert-error {
+      border-left-color: #d9534f;
+      background-color: #f2dede;
+      color: #a94442;
+    }
+    button, .btn {
+      padding: 8px 16px;
+      border-radius: 4px;
+      background-color: #00518A;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 8px;
+    }
+    button:hover, .btn:hover {
+      background-color: #003b66;
+    }
+    .btn-secondary {
+      background-color: #6c757d;
+    }
+    .btn-secondary:hover {
+      background-color: #5a6268;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #f8f9fa;
+    }
+    tr:hover {
+      background-color: #f8f9fa;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Quality Org Overhaul</h1>
+    <p>Emergency Mode - No JavaScript Required</p>
+  </header>
+
+  <div class="alert alert-error">
+    <p><strong>Application Error:</strong> The application encountered an error and is running in emergency mode.</p>
+    <p>This version doesn't require JavaScript and provides basic functionality.</p>
+  </div>
+
+  <ul class="tabs">
+    <li><button class="active" onclick="switchTab('dashboard')">Dashboard</button></li>
+    <li><button onclick="switchTab('teams')">Teams</button></li>
+    <li><button onclick="switchTab('personnel')">Personnel</button></li>
+    <li><button onclick="switchTab('actions')">Actions</button></li>
+  </ul>
+
+  <div id="dashboard" class="tab-content active">
+    <h2>Dashboard</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>BBV Team</h3>
+        <p>3 Members</p>
+      </div>
+      <div class="card">
+        <h3>ADD Team</h3>
+        <p>2 Members</p>
+      </div>
+      <div class="card">
+        <h3>ARB Team</h3>
+        <p>2 Members</p>
+      </div>
+      <div class="card">
+        <h3>Total Personnel</h3>
+        <p>7 Total</p>
+      </div>
+    </div>
+    
+    <h2>Recent Activity</h2>
+    <div class="card">
+      <p>Updated team structure - Added new team member</p>
+      <small>2 days ago</small>
+    </div>
+    <div class="card">
+      <p>Created new SOP - Document created and approved</p>
+      <small>5 days ago</small>
+    </div>
+  </div>
+
+  <div id="teams" class="tab-content">
+    <h2>Teams</h2>
+    
+    <div class="card">
+      <h3>BBV Quality Team</h3>
+      <p>Quality team supporting BBV product line</p>
+      <p><strong>Members:</strong> 3</p>
+      <p><strong>Clients:</strong> Client 1, Client 2</p>
+    </div>
+    
+    <div class="card">
+      <h3>ADD Quality Team</h3>
+      <p>Quality team supporting ADD product line</p>
+      <p><strong>Members:</strong> 2</p>
+      <p><strong>Clients:</strong> Client 3</p>
+    </div>
+    
+    <div class="card">
+      <h3>ARB Quality Team</h3>
+      <p>Quality team supporting ARB product line</p>
+      <p><strong>Members:</strong> 2</p>
+      <p><strong>Clients:</strong> Client 4, Client 5</p>
+    </div>
+  </div>
+
+  <div id="personnel" class="tab-content">
+    <h2>Personnel</h2>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Role</th>
+          <th>Team</th>
+          <th>Client</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>John Smith</td>
+          <td>Quality Account Manager</td>
+          <td>BBV Quality Team</td>
+          <td>Client 1</td>
+        </tr>
+        <tr>
+          <td>Jane Doe</td>
+          <td>Quality Engineer</td>
+          <td>BBV Quality Team</td>
+          <td>Client 1</td>
+        </tr>
+        <tr>
+          <td>Michael Brown</td>
+          <td>Quality Coordinator</td>
+          <td>BBV Quality Team</td>
+          <td>Client 2</td>
+        </tr>
+        <tr>
+          <td>Sarah Johnson</td>
+          <td>Quality Account Manager</td>
+          <td>ADD Quality Team</td>
+          <td>Client 3</td>
+        </tr>
+        <tr>
+          <td>Robert Williams</td>
+          <td>Document Control Specialist</td>
+          <td>ADD Quality Team</td>
+          <td>Client 3</td>
+        </tr>
+        <tr>
+          <td>Emily Davis</td>
+          <td>Quality Lead</td>
+          <td>ARB Quality Team</td>
+          <td>Client 4</td>
+        </tr>
+        <tr>
+          <td>James Wilson</td>
+          <td>Quality Specialist</td>
+          <td>ARB Quality Team</td>
+          <td>Client 5</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="actions" class="tab-content">
+    <h2>Actions</h2>
+    
+    <div class="card">
+      <h3>Troubleshooting</h3>
+      <p>Try these steps to resolve the application error:</p>
+      <ol>
+        <li>Clear your browser cache and refresh the page</li>
+        <li>Try using a different browser</li>
+        <li>Disable browser extensions that might interfere with scripts</li>
+        <li>Ensure your internet connection is stable</li>
+      </ol>
+      <a href="index.html" class="btn">Return to Main Application</a>
+    </div>
+    
+    <div class="card">
+      <h3>Contact Support</h3>
+      <p>If problems persist, contact your system administrator.</p>
+    </div>
+  </div>
+
+  <script>
+    // Minimal script that works without external dependencies
+    function switchTab(tabId) {
+      // Hide all tab contents
+      var contents = document.getElementsByClassName('tab-content');
+      for (var i = 0; i < contents.length; i++) {
+        contents[i].classList.remove('active');
+      }
+      
+      // Show selected tab content
+      document.getElementById(tabId).classList.add('active');
+      
+      // Update active tab button
+      var tabs = document.getElementsByClassName('tabs')[0].getElementsByTagName('button');
+      for (var i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove('active');
+        if (tabs[i].getAttribute('onclick').includes(tabId)) {
+          tabs[i].classList.add('active');
+        }
+      }
+    }
+  </script>
+</body>
+</html> 

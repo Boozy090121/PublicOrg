@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module Diagnostic Tool</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      margin-top: 0;
+      color: #333;
+    }
+    .module-status {
+      margin-bottom: 20px;
+      padding: 15px;
+      border-radius: 4px;
+      background-color: #f8f9fa;
+      border-left: 4px solid #ccc;
+    }
+    .success {
+      border-left-color: #28a745;
+      background-color: #d4edda;
+    }
+    .warning {
+      border-left-color: #ffc107;
+      background-color: #fff3cd;
+    }
+    .error {
+      border-left-color: #dc3545;
+      background-color: #f8d7da;
+    }
+    .module-name {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .module-details {
+      margin-left: 20px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    button:hover {
+      background-color: #0069d9;
+    }
+    .log-container {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #333;
+      color: #fff;
+      font-family: monospace;
+      border-radius: 4px;
+      height: 200px;
+      overflow-y: auto;
+    }
+    .log-entry {
+      margin: 0;
+      padding: 2px 0;
+    }
+    .log-success {
+      color: #28a745;
+    }
+    .log-warning {
+      color: #ffc107;
+    }
+    .log-error {
+      color: #dc3545;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quality Re-Org Platform Module Diagnostic Tool</h1>
+    
+    <div>
+      <button id="check-modules">Check All Modules</button>
+      <button id="fix-modules">Apply Module Fixes</button>
+      <button id="test-functions">Test Key Functions</button>
+    </div>
+    
+    <h2>Module Status</h2>
+    <div id="module-status-container"></div>
+    
+    <h2>Console Log</h2>
+    <div class="log-container" id="log-container"></div>
+  </div>
+
+  <!-- Main script -->
+  <script>
+    // Add log entry to the console display
+    function log(message, type = '') {
+      const logContainer = document.getElementById('log-container');
+      const entry = document.createElement('div');
+      entry.className = `log-entry log-${type}`;
+      entry.textContent = message;
+      logContainer.appendChild(entry);
+      logContainer.scrollTop = logContainer.scrollHeight;
+      
+      // Also log to browser console
+      console.log(message);
+    }
+    
+    // Check if a module exists and has expected properties
+    function checkModule(moduleName, expectedProperties = []) {
+      log(`Checking ${moduleName} module...`);
+      
+      const moduleContainer = document.createElement('div');
+      moduleContainer.className = 'module-status';
+      moduleContainer.id = `${moduleName}-status`;
+      
+      const nameElement = document.createElement('div');
+      nameElement.className = 'module-name';
+      nameElement.textContent = moduleName;
+      moduleContainer.appendChild(nameElement);
+      
+      const detailsElement = document.createElement('div');
+      detailsElement.className = 'module-details';
+      moduleContainer.appendChild(detailsElement);
+      
+      // Check if module exists
+      if (typeof window[moduleName] === 'undefined') {
+        moduleContainer.classList.add('error');
+        detailsElement.textContent = 'Module not found in global scope';
+        log(`ERROR: ${moduleName} module not found in global scope`, 'error');
+        return { exists: false, hasProperties: false, module: null };
+      }
+      
+      // Module exists, check properties
+      const module = window[moduleName];
+      let missingProperties = [];
+      
+      for (const prop of expectedProperties) {
+        if (typeof module[prop] === 'undefined') {
+          missingProperties.push(prop);
+        }
+      }
+      
+      if (missingProperties.length > 0) {
+        moduleContainer.classList.add('warning');
+        detailsElement.textContent = `Missing properties: ${missingProperties.join(', ')}\n\nAvailable properties: ${Object.keys(module).join(', ')}`;
+        log(`WARNING: ${moduleName} module missing properties: ${missingProperties.join(', ')}`, 'warning');
+        return { exists: true, hasProperties: false, module, missingProperties };
+      }
+      
+      // All checks passed
+      moduleContainer.classList.add('success');
+      detailsElement.textContent = `Available properties: ${Object.keys(module).join(', ')}`;
+      log(`SUCCESS: ${moduleName} module loaded correctly with all expected properties`, 'success');
+      return { exists: true, hasProperties: true, module };
+    }
+    
+    // Check all modules and their key functions
+    function checkAllModules() {
+      const statusContainer = document.getElementById('module-status-container');
+      statusContainer.innerHTML = '';
+      
+      // Define modules and their expected functions
+      const modulesToCheck = [
+        { name: 'config', properties: ['init', 'settings', 'getConfig'] },
+        { name: 'ui', properties: ['init', 'switchTab', 'refreshAllTabs'] },
+        { name: 'orgChart', properties: ['init', 'render'] },
+        { name: 'raciMatrix', properties: ['init', 'render'] },
+        { name: 'skillsMatrix', properties: ['init', 'render'] },
+        { name: 'personnel', properties: ['init', 'render'] },
+        { name: 'gapAnalysis', properties: ['init', 'render'] },
+        { name: 'teamBuilder', properties: ['init', 'createTeam'] },
+        { name: 'planning', properties: ['init', 'render'] },
+        { name: 'skillTree', properties: ['init', 'render'] }
+      ];
+      
+      log('Starting module diagnostics...');
+      
+      // Check each module
+      const results = {};
+      
+      for (const moduleInfo of modulesToCheck) {
+        const result = checkModule(moduleInfo.name, moduleInfo.properties);
+        results[moduleInfo.name] = result;
+        
+        // Add to the UI
+        statusContainer.appendChild(document.getElementById(`${moduleInfo.name}-status`));
+      }
+      
+      return results;
+    }
+    
+    // Apply fixes to modules
+    function applyModuleFixes() {
+      log('Applying module fixes...');
+      
+      try {
+        // Check if fix functions exist
+        if (typeof window.moduleFixes === 'undefined' || 
+            typeof window.moduleFixes.fixMissingModules !== 'function') {
+          log('ERROR: Module fix functions not available', 'error');
+          return false;
+        }
+        
+        // Apply fixes
+        window.moduleFixes.fixMissingModules();
+        log('Module fixes applied successfully', 'success');
+        
+        // Re-check modules
+        setTimeout(checkAllModules, 500);
+        return true;
+      } catch (error) {
+        log(`ERROR applying fixes: ${error.message}`, 'error');
+        return false;
+      }
+    }
+    
+    // Test key functionality
+    function testKeyFunctions() {
+      log('Testing key functions...');
+      
+      // Test UI functions
+      if (typeof window.ui !== 'undefined') {
+        try {
+          log('Testing ui.switchTab()...');
+          window.ui.switchTab('dashboard');
+          log('SUCCESS: ui.switchTab() executed', 'success');
+        } catch (error) {
+          log(`ERROR in ui.switchTab(): ${error.message}`, 'error');
+        }
+      }
+      
+      // Test orgChart functions
+      if (typeof window.orgChart !== 'undefined') {
+        try {
+          log('Testing orgChart.init()...');
+          window.orgChart.init();
+          log('SUCCESS: orgChart.init() executed', 'success');
+        } catch (error) {
+          log(`ERROR in orgChart.init(): ${error.message}`, 'error');
+        }
+      }
+      
+      // Test raciMatrix functions
+      if (typeof window.raciMatrix !== 'undefined') {
+        try {
+          log('Testing raciMatrix.init()...');
+          window.raciMatrix.init();
+          log('SUCCESS: raciMatrix.init() executed', 'success');
+        } catch (error) {
+          log(`ERROR in raciMatrix.init(): ${error.message}`, 'error');
+        }
+      }
+      
+      log('Function tests completed');
+    }
+    
+    // Set up event listeners
+    document.getElementById('check-modules').addEventListener('click', checkAllModules);
+    document.getElementById('fix-modules').addEventListener('click', applyModuleFixes);
+    document.getElementById('test-functions').addEventListener('click', testKeyFunctions);
+    
+    // Run initial check on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      log('Module diagnostic tool loaded');
+      setTimeout(checkAllModules, 1000);
+    });
+  </script>
+</body>
+</html> 
