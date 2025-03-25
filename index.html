@@ -844,6 +844,16 @@
     document.addEventListener('DOMContentLoaded', function() {
       console.log('DOM fully loaded');
       
+      // Add detailed debugging for module loading
+      console.log('Modules debug info:');
+      console.log('- UI module:', window.ui ? 'Loaded' : 'Missing');
+      console.log('- Config module:', window.config ? 'Loaded' : 'Missing');
+      console.log('- DataService module:', window.dataService ? 'Loaded' : 'Missing');
+      console.log('- FirebaseService module:', window.firebaseService ? 'Loaded' : 'Missing');
+      
+      // Check active tab
+      console.log('Current tab:', window.appData?.state?.currentTab || 'None set');
+      
       // Initialize UI directly if not already done by main.js
       if (window.ui && typeof window.ui.init === 'function' && !window.uiInitialized) {
         console.log('Initializing UI from DOMContentLoaded handler');
