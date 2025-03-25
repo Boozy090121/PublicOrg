@@ -421,44 +421,35 @@ function createFixedIndexHtml() {
 
 // Create a restart script
 function createRestartScript() {
-  const scriptContent = `
-    @echo off
-    echo Starting Quality Re-Org Platform with Fixed Modules...
-    echo.
+  // Only create the script if requested or if there was an error detected
+  if (window.createFixedScriptRequested || window.moduleLoadErrors) {
+    const scriptContent = `
+      @echo off
+      echo Starting Quality Re-Org Platform with Fixed Modules...
+      echo.
+      
+      start fixed-index.html
+      echo.
+      echo If the application doesn't open automatically, please
+      echo manually open fixed-index.html in your browser.
+      echo.
+      echo Press any key to exit...
+      pause >nul
+    `;
     
-    start fixed-index.html
-    echo.
-    echo If the application doesn't open automatically, please
-    echo manually open fixed-index.html in your browser.
-    echo.
-    echo Press any key to exit...
-    pause >nul
-  `;
-  
-  // Create a Blob with the script content
-  const blob = new Blob([scriptContent], { type: 'application/bat' });
-  const blobUrl = URL.createObjectURL(blob);
-  
-  // Create a download link
-  const a = document.createElement('a');
-  a.href = blobUrl;
-  a.download = 'start-fixed.bat';
-  a.textContent = 'Download Fixed Starter';
-  a.style.display = 'none';
-  
-  // Only append to document.body if it exists
-  if (document.body) {
-    document.body.appendChild(a);
-    a.click();
+    // Create a Blob with the script content
+    const blob = new Blob([scriptContent], { type: 'application/bat' });
+    const blobUrl = URL.createObjectURL(blob);
     
-    // Clean up
-    setTimeout(() => {
-      URL.revokeObjectURL(blobUrl);
-      document.body.removeChild(a);
-    }, 100);
-  } else {
-    // If document.body is not available yet, wait for DOMContentLoaded
-    document.addEventListener('DOMContentLoaded', function() {
+    // Create a download link
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = 'start-fixed.bat';
+    a.textContent = 'Download Fixed Starter';
+    a.style.display = 'none';
+    
+    // Only append to document.body if it exists
+    if (document.body) {
       document.body.appendChild(a);
       a.click();
       
@@ -467,15 +458,35 @@ function createRestartScript() {
         URL.revokeObjectURL(blobUrl);
         document.body.removeChild(a);
       }, 100);
-    });
+    } else {
+      // If document.body is not available yet, wait for DOMContentLoaded
+      document.addEventListener('DOMContentLoaded', function() {
+        document.body.appendChild(a);
+        a.click();
+        
+        // Clean up
+        setTimeout(() => {
+          URL.revokeObjectURL(blobUrl);
+          document.body.removeChild(a);
+        }, 100);
+      });
+    }
+  } else {
+    console.log('Skipping creation of start-fixed.bat as no errors were detected');
   }
 }
+
+// Add global flag to track if any module errors have been detected
+window.moduleLoadErrors = false;
 
 // Add error event listener to catch and handle module loading errors
 window.addEventListener('error', function(event) {
   console.error('Global error caught:', event.message);
   console.error('File:', event.filename);
   console.error('Line:', event.lineno);
+  
+  // Set the error flag when module errors are detected
+  window.moduleLoadErrors = true;
   
   // Check if the error is related to a specific module
   const moduleNames = ['config', 'ui', 'orgChart', 'raciMatrix'];
@@ -494,7 +505,8 @@ window.addEventListener('error', function(event) {
 
 // Create the fixed files
 createFixedIndexHtml();
-createRestartScript();
+// Conditionally create restart script, it's now automatic only when errors occur
+// Exposing a function to manually create it if needed
 
 console.log('Fixed modules loaded and applied');
 
@@ -506,6 +518,11 @@ window.fixedModules = {
   raciMatrixWrapper,
   loadScript,
   fixModuleExport,
+  // Add a manual function to create the restart script if needed
+  createRestartScript: function() {
+    window.createFixedScriptRequested = true;
+    createRestartScript();
+  },
   // Add a diagnostic function to check module status
   diagnose: function() {
     return {
