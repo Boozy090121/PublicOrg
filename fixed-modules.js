@@ -649,6 +649,29 @@ window.moduleFixes = {
   }
 };
 
+// Function to enhance error handling to gracefully recover from module loading errors
+function enhanceErrorHandling() {
+  console.log('Enhancing error handling...');
+  
+  // Add global error handler
+  window.addEventListener('error', function(event) {
+    console.error('Global error caught:', event.error || event.message);
+    console.log('File:', event.filename);
+    console.log('Line:', event.lineno);
+    
+    // Try to recover if module-related
+    if (event.message && (event.message.includes('is not defined') || 
+                         event.message.includes('is not a function'))) {
+      console.log('Attempting to recover from module error...');
+      if (typeof fixMissingModules === 'function') {
+        fixMissingModules();
+      }
+    }
+    
+    return false; // Allow error to propagate
+  });
+}
+
 // Create a fixed copy of index.html with script module fixes - disabled by default
 function createFixedIndexHtml() {
   console.log('Fixed HTML creation is disabled to prevent automatic downloads');

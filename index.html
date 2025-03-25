@@ -31,13 +31,13 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <!-- Main stylesheet -->
-  <link rel="stylesheet" href="src/css/tailwind.css" />
-  <link rel="stylesheet" href="src/css/team-styles.css" />
-  <link rel="stylesheet" href="src/css/skilltree.css" />
-  <link rel="stylesheet" href="src/css/planning.css" />
-  <link rel="stylesheet" href="src/css/shared-resources.css" />
-  <link rel="stylesheet" href="src/css/firebase-ui.css" />
-  <link rel="stylesheet" href="src/css/styles.css" />
+  <link rel="stylesheet" href="css/tailwind.css" />
+  <link rel="stylesheet" href="css/team-styles.css" />
+  <link rel="stylesheet" href="css/skilltree.css" />
+  <link rel="stylesheet" href="css/planning.css" />
+  <link rel="stylesheet" href="css/shared-resources.css" />
+  <link rel="stylesheet" href="css/firebase-ui.css" />
+  <link rel="stylesheet" href="css/styles.css" />
   
   <!-- No-Server Helper - Enable running without Node.js -->
   <script src="no-server.js"></script>
@@ -51,6 +51,7 @@
   <script src="fixed-modules.js"></script>
   
   <!-- Firebase and Data Services -->
+  <script src="js/firebase-init.js"></script>
   <script src="js/firebaseService.js"></script>
   <script src="js/firebaseDataService.js"></script>
   <script src="js/dataService.js"></script>
@@ -60,7 +61,7 @@
   <script src="js/core/config.js"></script>
   
   <!-- Bootstrap and initialization -->
-  <script src="src/js/bootstrap.js"></script>
+  <script src="js/main.js"></script>
   
   <!-- Base styles for fallback and recovery screens -->
   <style>
@@ -744,11 +745,20 @@
   </style>
 </head>
 <body class="loading">
-  <!-- Initial loader -->
+  <!-- Error dialog template (hidden by default) -->
+  <div id="error-dialog" class="error-dialog" style="display: none;">
+    <div class="error-content">
+      <h2>Error</h2>
+      <p id="error-message" class="error-message">An error occurred.</p>
+      <button id="error-close" class="btn btn-primary">Close</button>
+    </div>
+  </div>
+  
+  <!-- Initial loader shown while app loads -->
   <div class="initial-loader">
     <div class="loader-spinner"></div>
-    <h2>Quality Re-Org Platform</h2>
-    <p>Loading application...</p>
+    <p>Loading Quality Re-Org Hub...</p>
+    <p class="loader-status" style="font-size: 0.8rem; color: #6c757d; margin-top: 10px;">Initializing modules...</p>
   </div>
   
   <!-- Main app container -->
@@ -828,82 +838,25 @@
     </div>
   </div>
   
-  <!-- Main JS file - will initialize the app -->
-  <script src="js/main.js"></script>
+  <!-- JavaScript will be injected here if not in the head -->
   
   <script>
-    // Initialize app manually if needed
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('DOM Content Loaded - Manual initialization check');
-      
-      // Create emergency UI object if missing
-      if (!window.ui) {
-        console.warn('UI object not found, creating basic UI interface');
-        window.ui = {
-          initialized: false,
-          init: function() {
-            console.log('Minimal UI initialized from index.html emergency handler');
-            this.initialized = true;
-            this.setupTabs();
-            return true;
-          },
-          setupTabs: function() {
-            document.querySelectorAll('[data-tab]').forEach(tab => {
-              tab.addEventListener('click', () => {
-                const tabId = tab.getAttribute('data-tab');
-                this.switchTab(tabId);
-              });
-            });
-          },
-          switchTab: function(tabId) {
-            console.log('Switching to tab:', tabId);
-            
-            // Update active tab in navigation
-            document.querySelectorAll('#main-nav .nav-item').forEach(el => {
-              el.classList.remove('active');
-            });
-            
-            const activeTab = document.querySelector(`#main-nav [data-tab="${tabId}"]`);
-            if (activeTab) activeTab.classList.add('active');
-            
-            // Show simple tab content
-            const tabContent = document.getElementById('tabContent');
-            if (tabContent) {
-              tabContent.innerHTML = `<h2>${tabId.charAt(0).toUpperCase() + tabId.slice(1)}</h2><p>Tab content for ${tabId}</p>`;
-            }
-          },
-          showToast: function(message) {
-            alert(message);
-          }
-        };
-      }
+      console.log('DOM fully loaded');
       
       // Initialize UI directly if not already done by main.js
-      if (window.ui && typeof window.ui.init === 'function' && !window.ui.initialized) {
-        try {
-          console.log('Attempting to initialize UI from index.html emergency handler');
-          window.ui.init();
-          console.log('UI initialization successful from index.html handler');
-        } catch (err) {
-          console.error('Error initializing UI from index.html handler:', err);
-        }
+      if (window.ui && typeof window.ui.init === 'function' && !window.uiInitialized) {
+        console.log('Initializing UI from DOMContentLoaded handler');
+        window.uiInitialized = true;
+        window.ui.init();
       }
       
-      // Initialize data service if available
-      if (window.dataService && typeof window.dataService.init === 'function' && !window.dataService.initialized) {
-        window.dataService.init();
-      }
-      
-      // Force loading to complete after a timeout, in case anything gets stuck
+      // Hide loader after a short delay
       setTimeout(function() {
-        const loader = document.querySelector('.initial-loader');
-        if (loader) {
-          loader.style.display = 'none';
-        }
+        document.querySelector('.initial-loader').style.display = 'none';
         document.body.classList.remove('loading');
         document.body.classList.add('loaded');
-        console.log('Forced loading completion after timeout');
-      }, 1000);
+      }, 500);
     });
   </script>
   
