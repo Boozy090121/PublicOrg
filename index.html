@@ -41,8 +41,9 @@
   <script src="js/firebaseDataService.js"></script>
   <script src="js/dataService.js"></script>
   
-  <!-- Simplified UI module -->
-  <script src="js/modules/ui-simple.js"></script>
+  <!-- Core modules - load before main.js -->
+  <script src="js/modules/ui.js"></script>
+  <script src="js/core/config.js"></script>
   
   <!-- Bootstrap and initialization -->
   <script src="src/js/bootstrap.js"></script>
@@ -819,9 +820,59 @@
   <script>
     // Initialize app manually if needed
     document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM Content Loaded - Manual initialization check');
+      
+      // Create emergency UI object if missing
+      if (!window.ui) {
+        console.warn('UI object not found, creating basic UI interface');
+        window.ui = {
+          initialized: false,
+          init: function() {
+            console.log('Minimal UI initialized from index.html emergency handler');
+            this.initialized = true;
+            this.setupTabs();
+            return true;
+          },
+          setupTabs: function() {
+            document.querySelectorAll('[data-tab]').forEach(tab => {
+              tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                this.switchTab(tabId);
+              });
+            });
+          },
+          switchTab: function(tabId) {
+            console.log('Switching to tab:', tabId);
+            
+            // Update active tab in navigation
+            document.querySelectorAll('#main-nav .nav-item').forEach(el => {
+              el.classList.remove('active');
+            });
+            
+            const activeTab = document.querySelector(`#main-nav [data-tab="${tabId}"]`);
+            if (activeTab) activeTab.classList.add('active');
+            
+            // Show simple tab content
+            const tabContent = document.getElementById('tabContent');
+            if (tabContent) {
+              tabContent.innerHTML = `<h2>${tabId.charAt(0).toUpperCase() + tabId.slice(1)}</h2><p>Tab content for ${tabId}</p>`;
+            }
+          },
+          showToast: function(message) {
+            alert(message);
+          }
+        };
+      }
+      
       // Initialize UI directly if not already done by main.js
       if (window.ui && typeof window.ui.init === 'function' && !window.ui.initialized) {
-        window.ui.init();
+        try {
+          console.log('Attempting to initialize UI from index.html emergency handler');
+          window.ui.init();
+          console.log('UI initialization successful from index.html handler');
+        } catch (err) {
+          console.error('Error initializing UI from index.html handler:', err);
+        }
       }
       
       // Initialize data service if available
