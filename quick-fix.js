@@ -73,6 +73,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('Quick-fix: Pre-loading essential modules...');
     await safeLoadScript('js/modules/ui.js', false);
     console.log('Quick-fix: UI module preload complete');
+    
+    // Force hiding the loader after a short delay, regardless of other scripts
+    setTimeout(() => {
+      console.log('Quick-fix: Force-hiding loader');
+      const loader = document.querySelector('.initial-loader');
+      if (loader) {
+        loader.style.display = 'none';
+      }
+      document.body.classList.remove('loading');
+      document.body.classList.add('loaded');
+    }, 800);
+    
   } catch (error) {
     console.error('Quick-fix: Error preloading modules:', error);
   }

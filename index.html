@@ -10,6 +10,20 @@
   <!-- Emergency loading fix - Must be first -->
   <script src="quick-fix.js"></script>
   
+  <!-- Failsafe timeout to ensure loader doesn't hang indefinitely -->
+  <script>
+    // Add ultimate failsafe timeout (3 seconds max)
+    window.setTimeout(function() {
+      const loader = document.querySelector('.initial-loader');
+      if (loader && loader.style.display !== 'none') {
+        console.log('FAILSAFE: Force hiding loader after max timeout');
+        loader.style.display = 'none';
+        document.body.classList.remove('loading');
+        document.body.classList.add('loaded');
+      }
+    }, 3000);
+  </script>
+  
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
@@ -889,7 +903,7 @@
         document.body.classList.remove('loading');
         document.body.classList.add('loaded');
         console.log('Forced loading completion after timeout');
-      }, 5000);
+      }, 1000);
     });
   </script>
 </body>
